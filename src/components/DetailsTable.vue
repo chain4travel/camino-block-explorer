@@ -129,20 +129,23 @@ export default defineComponent({
     let knownHashes: string[] = [];
     const data: Ref<BlockTableData[]> = ref([]);
     const currentOffset = ref(0);
+    async function refresh() {
+      loading.value = true;
+      currentOffset.value = 0;
+      knownHashes = [];
+      data.value = await props.loadData(props.store, knownHashes, currentOffset.value, pageSize);
+      currentOffset.value += data.value.length;
+      loading.value = false;
+    }
+
+    await refresh();
 
     return {
       getAddressDetailsPath,
       data: data,
       loading,
       pagination: { rowsPerPage: 0 },
-      async refresh() {
-        loading.value = true;
-        currentOffset.value = 0;
-        knownHashes = [];
-        data.value = await props.loadData(props.store, knownHashes, currentOffset.value, pageSize);
-        currentOffset.value += data.value.length;
-        loading.value = false;
-      },
+      refresh,
       async onScroll({ to }: {
         to: number;
       }) {

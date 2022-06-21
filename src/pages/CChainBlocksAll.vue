@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row" style="overflow: auto">
     <div class="col-12">
       <DetailsTable :back-addr="backAddr" :load-data="loadBlocks" :require-load-more="requireLoadMore"
         :columns="columns" title="C-Blocks" :store="store" :details-link="detailsLink">
