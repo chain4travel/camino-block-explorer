@@ -6,7 +6,7 @@ import { usePIndexStore } from './p-index-store';
 import { Timeframe } from 'src/types/chain-loader';
 import { DateTime } from 'luxon';
 import { getStartDate } from 'src/utils/date-utils';
-import { MagellanValidatorsResponse } from 'src/types/magellan-types';
+import { NodeValidatorsResponse } from 'src/types/node-types';
 
 export const useXIndexStore = defineStore('xindex', {
   state: () => ({
@@ -33,7 +33,7 @@ export const useXIndexStore = defineStore('xindex', {
       this.store.gasFeesLoading = false;
       this.store.transactionsLoading = false;
     },
-    async getNumberOfValidators(): Promise<MagellanValidatorsResponse> {
+    async getNumberOfValidators(): Promise<NodeValidatorsResponse> {
       return this.pStore.getNumberOfValidators();
     },
     async getChainId(): Promise<string> {

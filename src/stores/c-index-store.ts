@@ -17,23 +17,33 @@ import {
 } from 'src/types/magellan-types';
 import { NodeValidatorsResponse } from 'src/types/node-types';
 
-import { TranscationDetail } from 'src/types/transaction';
+import {
+  TranscationDetail,
+  TrimmedTransactionDetails,
+} from 'src/types/transaction';
 import { DateTime } from 'luxon';
 import { Timeframe } from 'src/types/chain-loader';
 import { getStartDate } from 'src/utils/date-utils';
 import { usePIndexStore } from './p-index-store';
 import { useMagellanTxStore } from 'src/stores/magellan-tx-store';
+import {
+  getTransactionIndex,
+  getNextPrevPath,
+  TxHashItem,
+} from 'src/utils/transaction-utils';
 
 async function loadBlocksAndTransactions(
   startingBlock = NaN,
   endingBlock = NaN,
   transactionId = 0,
   blockCount = 10,
-  transactionCount = 10
+  transactionCount = 10,
+  address = ''
 ): Promise<MagellanCBlocksResponse> {
+  if (address != '') address = `&address=${address}`;
   return await (
     await axios.get(
-      `${getMagellanBaseUrl()}${cBlocksApi}?limit=${blockCount}&limit=${transactionCount}&blockStart=${startingBlock}&blockEnd=${endingBlock}&transactionId=${transactionId}`
+      `${getMagellanBaseUrl()}${cBlocksApi}?limit=${blockCount}&limit=${transactionCount}&blockStart=${startingBlock}&blockEnd=${endingBlock}&transactionId=${transactionId}${address}`
     )
   ).data;
 }
@@ -51,6 +61,8 @@ export const useCIndexStore = defineStore('cindex', {
   state: () => ({
     store: useMagellanTxStore(),
     pStore: usePIndexStore(),
+    txHashCache: [] as TxHashItem[],
+    txHashCacheAddress: '',
   }),
   getters: {},
   actions: {
@@ -132,7 +144,8 @@ export const useCIndexStore = defineStore('cindex', {
     async loadTransactions(
       startBlock = NaN,
       transactionId = 0,
-      count = 10
+      count = 10,
+      address = ''
     ): Promise<CTransaction[]> {
       // currently offset is not available "natively", so we add offset and count and skip the offset elements in processing
       // this does not work for more than 5k elements at once.. will need to adjust for that to work
@@ -142,7 +155,8 @@ export const useCIndexStore = defineStore('cindex', {
           NaN,
           transactionId,
           0,
-          count
+          count,
+          address
         );
         if (!cBlockresponse.transactions) {
           return [];
@@ -265,6 +279,122 @@ export const useCIndexStore = defineStore('cindex', {
           `${getMagellanBaseUrl()}${cBlocksDetailsApi}/${blockNumber}`
         )
       ).data;
+    },
+    async getNextTransactionHash(
+      address: string,
+      blockNumber: number,
+      transactionId: number,
+      backward: boolean
+    ): Promise<string> {
+      // Address change
+      if (this.txHashCacheAddress !== address) {
+        this.txHashCacheAddress = address;
+        this.txHashCache = [];
+      }
+      // Not in stack -> restart stack
+      let idx = this.txHashCache.findIndex(
+        (elem) =>
+          blockNumber === elem.blockNumber &&
+          transactionId === elem.transactionId
+      );
+      if (idx < 0) this.txHashCache = [];
+      idx += backward ? (idx < 0 ? 0 : -1) : 1;
+
+      let startBlock = NaN,
+        endBlock = NaN;
+
+      if (backward && idx < 0) {
+        // Load 50 cblocks before current using endBlock (newer)
+        endBlock = blockNumber;
+      } else if (!backward && idx === this.txHashCache.length) {
+        // Load 50 cblocks after current using startBlock (older)
+        startBlock = blockNumber;
+      } else return this.txHashCache[idx].hash;
+
+      try {
+        const dataFormating = (tx: TrimmedTransactionDetails) => {
+          return {
+            hash: tx.hash,
+            blockNumber: parseInt(tx.block),
+            transactionId: parseInt(tx.index),
+          };
+        };
+        const cBlockResponse = await loadBlocksAndTransactions(
+          startBlock,
+          endBlock,
+          transactionId,
+          0,
+          this.txHashCache.length ? 51 : 50,
+          address
+        );
+        if (!cBlockResponse.transactions) {
+          return '';
+        }
+        // We have to reverse the list!
+        if (isNaN(endBlock))
+          cBlockResponse.transactions = cBlockResponse.transactions.reverse();
+        // Skip first item if we are appending current list
+        if (!isNaN(endBlock)) {
+          cBlockResponse.transactions = cBlockResponse.transactions.slice(1);
+        }
+        if (isNaN(endBlock)) {
+          this.txHashCache = [
+            ...cBlockResponse.transactions.map(dataFormating),
+            ...this.txHashCache,
+          ];
+          idx += cBlockResponse.transactions.length;
+        } else
+          this.txHashCache = [
+            ...this.txHashCache,
+            ...cBlockResponse.transactions.map(dataFormating),
+          ];
+        return this.txHashCache[idx].hash;
+      } catch (e) {
+        console.log((e as Error).message);
+        return '';
+      }
+    },
+    async getNextAndPreviousTransactionHashs(Transaction: TranscationDetail) {
+      return await Promise.all([
+        this.getNextTransactionHash(
+          Transaction.fromAddr,
+          Transaction.block,
+          Transaction.transactionId as number,
+          false
+        ),
+        this.getNextTransactionHash(
+          Transaction.fromAddr,
+          Transaction.block,
+          Transaction.transactionId as number,
+          true
+        ),
+      ]);
+    },
+    async getPreviousTx(Transaction: TranscationDetail) {
+      let index = getTransactionIndex(Transaction, this.txHashCache);
+      const remainingTxLength = this.txHashCache.length - index;
+      if (index > 0 && this.txHashCache.length - remainingTxLength >= 1) {
+        return getNextPrevPath(this.txHashCache, index, false);
+      } else {
+        await this.getNextAndPreviousTransactionHashs(Transaction);
+        index = getTransactionIndex(Transaction, this.txHashCache);
+        if (index > 0) {
+          return getNextPrevPath(this.txHashCache, index, false);
+        } else return '';
+      }
+    },
+    async getNextTx(Transaction: TranscationDetail) {
+      let index = getTransactionIndex(Transaction, this.txHashCache);
+      if (index < this.txHashCache.length - 1) {
+        return getNextPrevPath(this.txHashCache, index, true);
+      } else {
+        await this.getNextAndPreviousTransactionHashs(Transaction);
+        index = getTransactionIndex(Transaction, this.txHashCache);
+        if (index < this.txHashCache.length - 1) {
+          return getNextPrevPath(this.txHashCache, index, true);
+        }
+        return '';
+      }
     },
   },
 });

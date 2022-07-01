@@ -1,23 +1,24 @@
-import { MagellanTransactionDetail } from './magellan-types';
 import { CTransaction } from './transaction';
 
 export interface ChainLoader {
   loadTransactions<T>(offset: number, count: number): Promise<T[]>;
   loadLatestBlocks<T>(limit: number, offset: number): Promise<T[]>;
   loadLatestTransactions<T>(limit: number, offset: number): Promise<T[]>;
-  loadAllCTxsForAddress(
-    address: string,
-    offset: number,
-    count: number
-  ): Promise<MagellanTransactionDetail[]>;
 }
 
 export interface CChainLoader {
   loadTransactions(
     startBlock: number,
     transactionId: number,
-    count: number
+    count: number,
+    address: string
   ): Promise<CTransaction[]>;
+  getNextTransactionHash(
+    address: string,
+    blockNumber: number,
+    transactionId: number,
+    backward: boolean
+  ): Promise<string>;
 }
 
 export interface ChainOverviewLoader {

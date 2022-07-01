@@ -82,9 +82,10 @@ export default defineComponent({
           ? store.loadTransactions(
               lastItem.blockNumber,
               lastItem.transactionIndex,
-              limit
+              limit,
+              ''
             )
-          : store.loadTransactions(NaN, 0, limit));
+          : store.loadTransactions(NaN, 0, limit, ''));
         moreToLoad = apiData.length > 0;
         return apiData.map(mapToTableData);
       },

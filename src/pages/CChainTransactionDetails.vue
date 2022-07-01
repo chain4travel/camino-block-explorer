@@ -4,7 +4,7 @@
     <div class="col-12">
       <q-card class="col">
         <q-card-section>
-          <div class="row">
+          <div class="flex justify-between">
             <q-btn
               icon="mdi-chevron-left"
               class="col-auto"
@@ -15,7 +15,31 @@
               :to="backroute"
             >
             </q-btn>
-            <div class="text-h6 q-pl-md col-10">C-Chain Transaction</div>
+            <div class="text-h5 q-pl-md col-10">C-Chain Transaction</div>
+            <div class="col-auto">
+              <q-btn
+                icon="mdi-chevron-left"
+                class="col-auto q-mr-sm full-height"
+                size="sm"
+                rounded
+                outline
+                color="primary"
+                :to="nextroute"
+                :disable="!nextroute"
+              >
+              </q-btn>
+              <q-btn
+                icon="mdi-chevron-right"
+                class="col-auto full-height"
+                size="sm"
+                rounded
+                outline
+                color="primary"
+                :to="prevroute"
+                :disable="!prevroute"
+              >
+              </q-btn>
+            </div>
           </div>
         </q-card-section>
         <q-card-section>
@@ -49,8 +73,7 @@
               >
               </TransactionDetailsView>
             </q-tab-panel>
-            <q-tab-panel name="logs">
-            </q-tab-panel>
+            <q-tab-panel name="logs"> </q-tab-panel>
           </q-tab-panels>
         </q-card-section>
       </q-card>
@@ -59,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType } from 'vue';
+import { defineComponent, ref } from 'vue';
 import TransactionDetailsView from 'src/components/TransactionDetailsView.vue';
 import { useRoute } from 'vue-router';
 import { getOverviewPath } from 'src/utils/route-utils';
@@ -84,16 +107,21 @@ export default defineComponent({
   async setup() {
     const route = useRoute();
     const cChain = useCIndexStore();
+    const transaction = await cChain.loadTransactionById(
+      getStringOrFirstElement(route.params.transactionId)
+    );
+    const nextroute = await cChain.getNextTx(transaction);
+    const prevroute = await cChain.getPreviousTx(transaction);
     return {
       tab: ref('overview'),
       tabs,
       transactionId: route.params.transactionId,
+      prevroute,
+      nextroute,
       backroute: route.query.back
         ? route.query.back
         : getOverviewPath(ChainType.C_CHAIN),
-      loadedTransaction: await cChain.loadTransactionById(
-        getStringOrFirstElement(route.params.transactionId)
-      ),
+      loadedTransaction: transaction,
       type: ChainType.C_CHAIN,
     };
   },

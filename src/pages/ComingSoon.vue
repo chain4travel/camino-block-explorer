@@ -1,9 +1,14 @@
 <template>
   <q-page-container
     class="column items-center justify-center no-wrap custum-container"
-    style="gap: 50px;"
+    style="gap: 50px"
   >
-    <q-img src="/src/assets/comingSoon.svg" width="260px" height="280px" style="margin-top: 50px"/>
+    <q-img
+      src="/src/assets/comingSoon.svg"
+      width="260px"
+      height="280px"
+      style="margin-top: 50px"
+    />
     <div class="text-h5 text-center">
       The Camino Mainnet is not available yet.
     </div>

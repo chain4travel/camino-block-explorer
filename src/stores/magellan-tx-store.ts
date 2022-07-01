@@ -7,8 +7,8 @@ import {
   MagellanXPOutput,
   MagellanTxFeeAggregatesResponse,
   MagellanAggregatesResponse,
-  MagellanValidatorsResponse,
 } from 'src/types/magellan-types';
+import { NodeValidatorsResponse } from 'src/types/node-types';
 import {
   transactionApi,
   transactionAggregates,
@@ -93,7 +93,7 @@ export const useMagellanTxStore = defineStore('magellan-tx-store', {
   state: () => ({
     chainIds: {} as Record<string, string>,
     selectedTime: Timeframe.HOURS_24,
-    validators: {} as MagellanValidatorsResponse,
+    validators: {} as NodeValidatorsResponse,
     numberOfTransactions: 0 as number,
     totalGasFees: 0 as number,
     numberOfActiveValidators: 0 as number,

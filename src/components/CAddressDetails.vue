@@ -60,9 +60,10 @@
               <DetailsTable
                 height="57vh"
                 :columns="columns"
-                :load-data="loadData"
+                :load-data="loadTransactions"
                 :require-load-more="requireLoadMore"
                 :store="store"
+                title="C-Transaction"
               >
                 <template v-slot:body-cell-direction="props">
                   <q-td :props="props">
@@ -94,16 +95,15 @@ import { defineComponent, ref, Ref } from 'vue';
 import DetailsTable from './DetailsTable.vue';
 import { useRoute } from 'vue-router';
 import ErrorNotFoundPage from 'src/pages/ErrorNotFoundPage.vue';
-import { useAddressStore } from 'src/stores/address-store';
+import { useCIndexStore } from 'src/stores/c-index-store';
 import { getStringOrFirstElement } from 'src/utils/display-utils';
 import { CAddressTransactionTableData } from 'src/types/transaction';
-import { MagellanTransactionDetail } from 'src/types/magellan-types';
 import {
   getTransactionDetailsPath,
   getAddressDetailsPath,
 } from 'src/utils/route-utils';
 import { ChainType } from 'src/types/chain-type';
-import { ChainLoader } from 'src/types/chain-loader';
+import { CChainLoader } from 'src/types/chain-loader';
 import CopyButton from 'src/components/ui/CopyButton.vue';
 import LongString from './ui/LongString.vue';
 
@@ -114,15 +114,10 @@ const tabs = [
   },
 ];
 
-function getFee(element: MagellanTransactionDetail): number {
-  return parseInt(element.effectiveGasPrice) * parseInt(element.gasUsed);
-}
-
 export default defineComponent({
   name: 'CAddressDetails',
   async setup() {
     const route = useRoute();
-    const addressStore = useAddressStore();
     const address = getStringOrFirstElement(route.params.addressId);
 
     const allTxData: Ref<CAddressTransactionTableData[]> = ref([]);
@@ -137,44 +132,43 @@ export default defineComponent({
     return {
       tab: ref('transactions'),
       tabs,
-      store: addressStore,
+      store: useCIndexStore(),
 
-      async loadData(
-        store: ChainLoader,
-        knownHashes: string[],
-        offset: number,
-        limit: number
-      ) {
-        const data = await store.loadAllCTxsForAddress(
-          getStringOrFirstElement(route.params.addressId),
-          offset,
-          limit
-        );
-        const newData: CAddressTransactionTableData[] = [];
-        moreToLoad = false;
-        for (const element of data) {
-          if (!knownHashes.includes(element.hash)) {
-            newData.push({
-              type: element.type,
-              age: new Date(element.timestamp * 1000),
-              block: element.block,
-              from: element.from,
-              to: element.to,
-              txnFee: getFee(element),
-              txnHash: element.hash,
-              value: parseInt(element.value),
-              direction: element.from === address ? 'out' : 'in',
-            });
-            moreToLoad = true;
-            knownHashes.push(element.hash);
-          }
-        }
-        return newData;
+      async loadTransactions(
+        store: CChainLoader,
+        _: string[],
+        __: number,
+        limit: number,
+        lastItem: CAddressTransactionTableData
+      ): Promise<CAddressTransactionTableData[]> {
+        const apiData = await (lastItem
+          ? store.loadTransactions(
+              lastItem.block,
+              lastItem.index,
+              limit,
+              address
+            )
+          : store.loadTransactions(NaN, 0, limit, address));
+        moreToLoad = apiData.length > 0;
+        return apiData.map((elem) => {
+          return {
+            type: 0,
+            age: elem.timestamp,
+            block: elem.block,
+            index: elem.index,
+            from: elem.from,
+            to: elem.to,
+            txnFee: elem.transactionCost,
+            txnHash: elem.hash,
+            value: elem.value,
+            direction: elem.from === address ? 'out' : 'in',
+          };
+        });
       },
+
       requireLoadMore(): boolean {
         return moreToLoad;
       },
-      txMainData: allTxData,
       columns: [
         {
           name: 'direction',

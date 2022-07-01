@@ -1,12 +1,7 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
-import {
-  MagellanCTransactionResponse,
-  MagellanTransactionDetail,
-} from 'src/types/magellan-types';
 import { XPTransaction } from 'src/types/transaction';
 import { getMagellanBaseUrl } from 'src/utils/client-utils';
-import { cBlocksApi } from 'src/utils/magellan-api-utils';
 import { useMagellanTxStore } from './magellan-tx-store';
 import { assets, addresses } from 'src/utils/magellan-api-utils';
 import {
@@ -24,26 +19,6 @@ export const useAddressStore = defineStore('address', {
   }),
   getters: {},
   actions: {
-    async loadAllCTxsForAddress(
-      address: string,
-      offset = 0,
-      count = 10
-    ): Promise<MagellanTransactionDetail[]> {
-      //TODO Offset Deprecated is currently returned by magellan when using offset with
-      // ctransactions endpoint. For now add both to limit and use splice to
-      // get correct range
-      // Also not optimal, that offset/count are applied to both to/from, leading to double the amount of returns and no clear ordering.
-      // Here a new/fixed endpoint ordered by date in magellan would be better.
-      const limitAndOffsetQueryString = `limit=${count + offset}`;
-      const toandfromAddressTxs = await axios.get(
-        `${getMagellanBaseUrl()}${cBlocksApi}?address=${address}&limit=0&${limitAndOffsetQueryString}`
-      );
-      return [
-        ...(<MagellanCTransactionResponse>(
-          toandfromAddressTxs.data
-        )).transactions.splice(offset, count),
-      ];
-    },
     async loadXpTransactions(
       address: string,
       chain: string,

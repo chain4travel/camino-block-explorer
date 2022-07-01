@@ -9,7 +9,7 @@
     />
   </div>
   <div class="row justify-center">
-    <ChainOverviewCards class="col-12" :store="cStore" />
+    <ChainOverviewCards class="col-12" :store="cChain" />
   </div>
   <div class="row">
     <div :class="$q.screen.lt.md ? 'col-12 q-py-md' : 'col-md-6 q-pr-sm'">
@@ -64,18 +64,18 @@ export default defineComponent({
     pageSize: { type: Number, default: 10 },
   },
   async setup(props, { emit }) {
-    const cStore = useCIndexStore();
+    const cChain = useCIndexStore();
     const blocks: Ref<BlockTableData[]> = ref(
-      await cStore.loadBlocks(NaN, props.pageSize)
+      await cChain.loadBlocks(NaN, props.pageSize)
     );
     const transactions: Ref<CTransaction[]> = ref(
-      await cStore.loadTransactions(NaN, props.pageSize)
+      await cChain.loadTransactions(NaN, props.pageSize)
     );
     const blockPage = ref(1);
     const transactionsPage = ref(1);
 
     return {
-      cStore,
+      cChain,
       ChainType,
       blocks,
       transactions,
@@ -85,18 +85,18 @@ export default defineComponent({
         () => !blocks.value.some((item) => item.number === 0)
       ),
       async refreshAll() {
-        cStore.refreshAll(cStore.store.selectedTime);
-        blocks.value = await cStore.loadBlocks(NaN, props.pageSize);
-        transactions.value = await cStore.loadTransactions(NaN, props.pageSize);
+        cChain.refreshAll(cChain.store.selectedTime);
+        blocks.value = await cChain.loadBlocks(NaN, props.pageSize);
+        transactions.value = await cChain.loadTransactions(NaN, props.pageSize);
       },
       search(value: string) {
         emit('search', value);
       },
       async refreshBlocks() {
-        blocks.value = await cStore.loadBlocks(NaN, props.pageSize);
+        blocks.value = await cChain.loadBlocks(NaN, props.pageSize);
       },
       async refreshTransactions() {
-        transactions.value = await cStore.loadTransactions(NaN, props.pageSize);
+        transactions.value = await cChain.loadTransactions(NaN, props.pageSize);
       },
       getBlockDetailsLink(item: number) {
         return getBlockDetailsPath(ChainType.C_CHAIN, item);
@@ -105,14 +105,14 @@ export default defineComponent({
         return getTransactionDetailsPath(ChainType.C_CHAIN, item);
       },
       async loadBlockPage(newPageNumber: number) {
-        blocks.value = await cStore.loadBlocks(
+        blocks.value = await cChain.loadBlocks(
           (newPageNumber - 1) * props.pageSize,
           props.pageSize
         );
         blockPage.value = newPageNumber;
       },
       async loadTransactionPage(newPageNumber: number) {
-        transactions.value = await await cStore.loadTransactions(
+        transactions.value = await await cChain.loadTransactions(
           (newPageNumber - 1) * props.pageSize,
           props.pageSize
         );
