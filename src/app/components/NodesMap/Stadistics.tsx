@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,6 +22,9 @@ ChartJS.register(
 );
 
 const Stadistics = ({ nodesPerCountry }: any) => {
+  const [isMoible, setIsMobile] = useState(false);
+  const [loadingRezise, setLoadingRezise] = useState(true);
+
   const options = {
     indexAxis: 'y' as const,
     color: '#64748B',
@@ -71,13 +74,31 @@ const Stadistics = ({ nodesPerCountry }: any) => {
     ],
   };
 
+  function updateWindowDimensions() {
+    setLoadingRezise(true);
+    if (window.innerWidth < 720) {
+      setIsMobile(true);
+      ChartJS.defaults.datasets.bar.barThickness = 10;
+    } else {
+      setIsMobile(false);
+      ChartJS.defaults.datasets.bar.barThickness = 35;
+    }
+    setLoadingRezise(false);
+  }
+
   useEffect(() => {
-    console.log('nodesPerCountry', nodesPerCountry);
+    window.addEventListener('resize', () => {
+      updateWindowDimensions();
+    });
+  });
+
+  useEffect(() => {
+    setLoadingRezise(false);
   }, []);
 
   return (
     <Fragment>
-      <Bar options={options} data={data} />
+      {loadingRezise == false ? <Bar options={options} data={data} /> : null}
     </Fragment>
   );
 };
