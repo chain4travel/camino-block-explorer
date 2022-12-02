@@ -100,17 +100,17 @@ class Utils {
   public static async getNodeData(): Promise<LocationNode[]> {
     return new Promise((resolve, reject) => {
       if (
-        localStorage.getItem('infoNodes') != undefined &&
-        localStorage.getItem('infoNodes') != null
+        sessionStorage.getItem('infoNodes') != undefined &&
+        sessionStorage.getItem('infoNodes') != null
       ) {
-        let stringInfo: any = localStorage.getItem('infoNodes');
+        let stringInfo: any = sessionStorage.getItem('infoNodes');
         let infoNodes: LocationNode[] = JSON.parse(stringInfo);
         resolve(infoNodes);
       } else {
         let utils: Utils = new Utils('https://columbus.camino.foundation');
         utils.getPeersInfo('ip-api').then(info => {
           console.log('infoNodes', info);
-          localStorage.setItem('infoNodes', JSON.stringify(info));
+          sessionStorage.setItem('infoNodes', JSON.stringify(info));
           resolve(info);
         });
       }
