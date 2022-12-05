@@ -54,10 +54,14 @@ const Stadistics = ({ nodesPerCountry }: any) => {
   };
 
   const getStringFlag = (countryName: string) => {
-    let flagUnicode = flags.find(
-      fl => fl.name.toString() == countryName.toString(),
-    );
-    return flagUnicode?.emoji;
+    try {
+      let flagUnicode = flags.find(
+        fl => fl.name.toString() == countryName.toString(),
+      );
+      return flagUnicode?.emoji;
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const labels = nodesPerCountry.map((item: any) => item.country);
@@ -76,14 +80,17 @@ const Stadistics = ({ nodesPerCountry }: any) => {
 
   function updateWindowDimensions() {
     setLoadingRezise(true);
-    if (window.innerWidth < 720) {
-      setIsMobile(true);
-      ChartJS.defaults.datasets.bar.barThickness = 10;
-    } else {
-      setIsMobile(false);
-      ChartJS.defaults.datasets.bar.barThickness = 35;
-    }
-    setLoadingRezise(false);
+
+    setTimeout(() => {
+      if (window.innerWidth < 720) {
+        setIsMobile(true);
+        ChartJS.defaults.datasets.bar.barThickness = 10;
+      } else {
+        setIsMobile(false);
+        ChartJS.defaults.datasets.bar.barThickness = 35;
+      }
+      setLoadingRezise(false);
+    }, 1);
   }
 
   useEffect(() => {
@@ -93,7 +100,7 @@ const Stadistics = ({ nodesPerCountry }: any) => {
   });
 
   useEffect(() => {
-    setLoadingRezise(false);
+    updateWindowDimensions();
   }, []);
 
   return (

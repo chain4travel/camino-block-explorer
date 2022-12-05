@@ -2,6 +2,8 @@ import axios from 'axios';
 import LocationNode from '../../../types/locationNode';
 import NodesPerCountry from 'types/nodesPerCountry';
 import sortBy from 'lodash/sortBy';
+import { store } from '../../../index';
+import { Constants } from 'constants/Constants';
 
 class Utils {
   rpc: string;
@@ -99,21 +101,33 @@ class Utils {
 
   public static async getNodeData(): Promise<LocationNode[]> {
     return new Promise((resolve, reject) => {
-      if (
-        sessionStorage.getItem('infoNodes') != undefined &&
-        sessionStorage.getItem('infoNodes') != null
-      ) {
-        let stringInfo: any = sessionStorage.getItem('infoNodes');
-        let infoNodes: LocationNode[] = JSON.parse(stringInfo);
-        resolve(infoNodes);
-      } else {
-        let utils: Utils = new Utils('https://columbus.camino.foundation');
-        utils.getPeersInfo('ip-api').then(info => {
-          console.log('infoNodes', info);
-          sessionStorage.setItem('infoNodes', JSON.stringify(info));
-          resolve(info);
+      let networks = store.getState().appConfig;
+      let activeNetwork = networks.networks.find(
+        element => element.id === networks.activeNetwork,
+      );
+
+      var data = JSON.stringify({
+        rpc: `${activeNetwork?.protocol}://${activeNetwork?.host}:${activeNetwork?.port}`,
+        ip_provider: Constants.URL_API_GEOIP_PROVIDER,
+      });
+
+      var request = {
+        method: 'post',
+        url: Constants.URL_API_GEOIP,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data,
+      };
+
+      axios(request)
+        .then(function (response: any) {
+          resolve(response.data);
+        })
+        .catch(function (error) {
+          reject([]);
+          console.log(error);
         });
-      }
     });
   }
 
