@@ -85,10 +85,7 @@ const Validators: FC = () => {
       .then((dataNodes: LocationNode[]) => {
         setData(dataNodes);
         let sumNodesPerCountry = Utils.sumNodesPerCountry(dataNodes);
-
         setNodesPerCountry(sumNodesPerCountry);
-
-        console.log('sumNodesPerCountry', sumNodesPerCountry);
         setLoading(false);
       })
       .catch(error => {

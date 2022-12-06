@@ -7,6 +7,8 @@
     "@emotion/styled": "11.9.3",
     "@mdi/js": "6.9.96",
     "@mdi/react": "1.6.0",
+    "@metamask/detect-provider": "2.0.0",
+    "@metamask/providers": "10.2.1",
     "@mui/icons-material": "5.8.4",
     "@mui/material": "5.8.6",
     "@mui/styled-engine-sc": "5.8.0",
@@ -41,6 +43,7 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react-hooks": "4.3.0",
+    "ethers": "5.7.2",
     "fontfaceobserver": "2.1.0",
     "husky": "7.0.4",
     "i18next": "21.6.6",
@@ -81,7 +84,9 @@
     "stylelint-processor-styled-components": "1.10.0",
     "ts-node": "10.4.0",
     "typescript": "4.5.4",
-    "web-vitals": "2.1.2"
+    "web-vitals": "2.1.2",
+    "web3": "1.8.1",
+    "web3-react": "5.0.5"
   },
   "scripts": {
     "start": "react-scripts start",

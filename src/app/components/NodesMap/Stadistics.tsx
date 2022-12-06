@@ -54,7 +54,6 @@ const Stadistics = ({ nodesPerCountry }: any) => {
   };
 
   const getStringFlag = (countryCode: string) => {
-    console.log('countryCode', countryCode);
     try {
       let flagUnicode = flags.find(
         fl => fl.code.toString() == countryCode.toString(),
