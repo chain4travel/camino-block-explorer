@@ -25,7 +25,6 @@ import { ReactComponent as DarkLogo } from './assets/LogoDark.svg';
 import { ReactComponent as LightLogo } from './assets/LogoLight.svg';
 import { ReactComponent as Discord } from './assets/Discord.svg';
 import { ReactComponent as Logo } from './assets/cam.svg';
-import MetamaskButton from './MetamaskConnection';
 
 export function Footer() {
   const { isTablet } = useWidth();
@@ -187,9 +186,7 @@ export function Footer() {
                 spacing={{ xs: 2, md: 1, lg: 2 }}
                 justifyContent={!isTablet ? 'left' : 'center'}
               >
-                <Grid item xs={12} sm="auto">
-                  <MetamaskButton />
-                </Grid>
+                <Grid item xs={12} sm="auto"></Grid>
               </Grid>
             </Grid>
           </Grid>
