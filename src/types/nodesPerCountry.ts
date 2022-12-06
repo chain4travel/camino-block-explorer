@@ -1,6 +1,6 @@
 type NodesPerCountry = {
   country: string;
-  aplha2: string;
+  alpha2: string;
   nodes: string[];
 };
 

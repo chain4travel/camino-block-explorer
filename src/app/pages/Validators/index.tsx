@@ -73,6 +73,7 @@ const Validators: FC = () => {
   //const [maxValue, setMaxValue] = useState(0);
   const [zoomValue, setZoomValue] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffectOnce(() => {
     dispatch(loadValidators());
@@ -80,11 +81,20 @@ const Validators: FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    Utils.getNodeData().then((dataNodes: LocationNode[]) => {
-      setData(dataNodes);
-      setNodesPerCountry(Utils.sumNodesPerCountry(dataNodes));
-      setLoading(false);
-    });
+    Utils.getNodeData()
+      .then((dataNodes: LocationNode[]) => {
+        setData(dataNodes);
+        let sumNodesPerCountry = Utils.sumNodesPerCountry(dataNodes);
+
+        setNodesPerCountry(sumNodesPerCountry);
+
+        console.log('sumNodesPerCountry', sumNodesPerCountry);
+        setLoading(false);
+      })
+      .catch(error => {
+        setLoading(false);
+        setError(true);
+      });
   }, []);
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
@@ -124,6 +134,20 @@ const Validators: FC = () => {
           <div style={{ position: 'relative' }}>
             {loading == false ? (
               <>
+                {error == true ? (
+                  <>
+                    <Typography
+                      style={{ textAlign: 'center' }}
+                      component="div"
+                      variant="body1"
+                    >
+                      <Box sx={{ color: 'error.main' }}>
+                        <h4>Could not connect to the geolocation API</h4>
+                      </Box>
+                    </Typography>
+                  </>
+                ) : null}
+
                 {data.length > 0 ? (
                   <>
                     <Grid container spacing={2}>
@@ -165,6 +189,7 @@ const Validators: FC = () => {
                           </ZoomableGroup>
                         </ComposableMap>
                       </Grid>
+
                       <Grid item={true} xs={12} md={12}>
                         <Box
                           sx={{

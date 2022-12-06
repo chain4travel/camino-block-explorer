@@ -133,17 +133,16 @@ class Utils {
 
   public static sumNodesPerCountry(info: LocationNode[]): NodesPerCountry[] {
     let dataCountry: NodesPerCountry[] = [];
-
     for (let i = 0; i < info.length; i++) {
-      if (dataCountry.some((dat: any) => dat.country == info[i].country)) {
+      if (dataCountry.some((dat: any) => dat.alpha2 == info[i].alpha2)) {
         let locationNode: LocationNode = info[i];
         let indexDataCountry = dataCountry.findIndex(
-          (dat: any) => dat.country == info[i].country,
+          (dat: any) => dat.alpha2 == info[i].alpha2,
         );
         dataCountry[indexDataCountry].nodes.push(locationNode.nodeIdentity);
       } else {
         let nodePerCountry: NodesPerCountry = {
-          aplha2: info[i].alpha2,
+          alpha2: info[i].alpha2,
           country: info[i].country,
           nodes: [info[i].nodeIdentity],
         };

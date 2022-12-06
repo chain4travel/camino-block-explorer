@@ -40,7 +40,7 @@ const Stadistics = ({ nodesPerCountry }: any) => {
           color: '#64748B',
           callback: function (value: any, index: any, ticks: any) {
             return (
-              getStringFlag(nodesPerCountry[index].country) +
+              getStringFlag(nodesPerCountry[index].alpha2) +
               ' ' +
               nodesPerCountry[index].country
             );
@@ -53,10 +53,11 @@ const Stadistics = ({ nodesPerCountry }: any) => {
     },
   };
 
-  const getStringFlag = (countryName: string) => {
+  const getStringFlag = (countryCode: string) => {
+    console.log('countryCode', countryCode);
     try {
       let flagUnicode = flags.find(
-        fl => fl.name.toString() == countryName.toString(),
+        fl => fl.code.toString() == countryCode.toString(),
       );
       return flagUnicode?.emoji;
     } catch (e) {
