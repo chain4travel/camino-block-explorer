@@ -71,7 +71,7 @@ const Validators: FC = () => {
   const [data, setData] = useState<LocationNode[]>([]);
   const [nodesPerCountry, setNodesPerCountry] = useState<NodesPerCountry[]>([]);
   //const [maxValue, setMaxValue] = useState(0);
-  const [zoomValue, setZoomValue] = useState(1);
+  const [zoomValue, setZoomValue] = useState(1.5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -147,109 +147,102 @@ const Validators: FC = () => {
 
                 {data.length > 0 ? (
                   <>
-                    <Grid container spacing={2}>
-                      <Grid item={true} xs={12} md={12}>
-                        <ComposableMap projection={'geoMercator'}>
-                          <ZoomableGroup center={[0, 40]} zoom={zoomValue}>
-                            <Geographies
-                              geography={features}
-                              pointerEvents={'none'}
-                            >
-                              {({ geographies }) =>
-                                geographies.map(geo => (
-                                  <Geography
-                                    key={geo.rsmKey}
-                                    geography={geo}
-                                    fill="#41547C"
-                                  />
-                                ))
-                              }
-                            </Geographies>
-                            {data.map(
-                              (
-                                { lng, lat, nodeIdentity, country, city },
-                                index,
-                              ) => {
-                                return (
-                                  <CircleMarker
-                                    key={index}
-                                    country={country}
-                                    city={city}
-                                    lng={lng}
-                                    lat={lat}
-                                    rValue={10}
-                                    nodeIdentity={nodeIdentity}
-                                  />
-                                );
-                              },
-                            )}
-                          </ZoomableGroup>
-                        </ComposableMap>
-                      </Grid>
-
-                      <Grid item={true} xs={12} md={12}>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            cursor: 'pointer',
-                            width: '100%',
-                            height: '48px',
-                            padding: '0 8px',
-                            backgroundColor: 'primary.dark',
-                          }}
-                        >
-                          <Tabs
-                            variant="fullWidth"
-                            value={activeTab}
-                            onChange={handleChangeTab}
-                            textColor="secondary"
-                            indicatorColor="secondary"
+                    <div>
+                      <ComposableMap
+                        style={{
+                          height: isWidescreen || isDesktop ? 700 : 'auto',
+                          width: '100%',
+                        }}
+                        projection={'geoMercator'}
+                      >
+                        <ZoomableGroup center={[0, 40]} zoom={zoomValue}>
+                          <Geographies
+                            geography={features}
+                            pointerEvents={'none'}
                           >
-                            <Tab
-                              className="tab"
-                              disableRipple
-                              label="Country Stadistics"
-                              {...a11yProps(0)}
-                            />
-                            <Tab
-                              className="tab"
-                              disableRipple
-                              label="Node Stadistics"
-                              {...a11yProps(1)}
-                            />
-                          </Tabs>
-                        </Box>
+                            {({ geographies }) =>
+                              geographies.map(geo => (
+                                <Geography
+                                  key={geo.rsmKey}
+                                  geography={geo}
+                                  fill="#41547C"
+                                />
+                              ))
+                            }
+                          </Geographies>
+                          {data.map(
+                            (
+                              { lng, lat, nodeIdentity, country, city },
+                              index,
+                            ) => {
+                              return (
+                                <CircleMarker
+                                  key={index}
+                                  country={country}
+                                  city={city}
+                                  lng={lng}
+                                  lat={lat}
+                                  rValue={10}
+                                  nodeIdentity={nodeIdentity}
+                                />
+                              );
+                            },
+                          )}
+                        </ZoomableGroup>
+                      </ComposableMap>
+                    </div>
 
-                        <Box>
-                          <TabPanel value={activeTab} index={0}>
-                            <Stadistics nodesPerCountry={nodesPerCountry} />
-                          </TabPanel>
-                          <TabPanel value={activeTab} index={1}>
-                            <TableContainer sx={{ minHeight: '400px' }}>
-                              {isWidescreen || isDesktop ? (
-                                <TableView columns={columns}>
-                                  {validators?.map(validator => (
-                                    <TableViewRow
-                                      key={validator.nodeID}
-                                      validator={validator}
-                                    />
-                                  ))}
-                                </TableView>
-                              ) : (
-                                <Grid item container alignItems="center">
-                                  {validators.map(validator => (
-                                    <GridViewItem
-                                      key={validator.nodeID}
-                                      validator={validator}
-                                    />
-                                  ))}
-                                </Grid>
-                              )}
-                            </TableContainer>
-                          </TabPanel>
-                        </Box>
-                      </Grid>
-                    </Grid>
+                    <div>
+                      <Tabs
+                        variant="fullWidth"
+                        value={activeTab}
+                        onChange={handleChangeTab}
+                        textColor="secondary"
+                        indicatorColor="secondary"
+                      >
+                        <Tab
+                          className="tab"
+                          disableRipple
+                          label="Country Stadistics"
+                          {...a11yProps(0)}
+                        />
+                        <Tab
+                          className="tab"
+                          disableRipple
+                          label="Node Stadistics"
+                          {...a11yProps(1)}
+                        />
+                      </Tabs>
+                    </div>
+
+                    {activeTab == 0 ? (
+                      <Stadistics nodesPerCountry={nodesPerCountry} />
+                    ) : null}
+                    {activeTab == 1 ? (
+                      <>
+                        <TableContainer sx={{ minHeight: '400px' }}>
+                          {isWidescreen || isDesktop ? (
+                            <TableView columns={columns}>
+                              {validators?.map(validator => (
+                                <TableViewRow
+                                  key={validator.nodeID}
+                                  validator={validator}
+                                />
+                              ))}
+                            </TableView>
+                          ) : (
+                            <Grid item container alignItems="center">
+                              {validators.map(validator => (
+                                <GridViewItem
+                                  key={validator.nodeID}
+                                  validator={validator}
+                                />
+                              ))}
+                            </Grid>
+                          )}
+                        </TableContainer>
+                      </>
+                    ) : null}
                   </>
                 ) : null}
               </>
