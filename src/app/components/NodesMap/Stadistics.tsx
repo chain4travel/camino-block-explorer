@@ -33,6 +33,9 @@ const Stadistics = ({ nodesPerCountry }: any) => {
       legend: {
         display: false,
       },
+      tooltip: {
+        displayColors: false,
+      },
     },
     scales: {
       y: {
