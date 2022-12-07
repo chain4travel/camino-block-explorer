@@ -203,22 +203,19 @@ const Validators: FC = () => {
                         <Tab
                           className="tab"
                           disableRipple
-                          label="Country Stadistics"
+                          label="Node Stadistics"
                           {...a11yProps(0)}
                         />
                         <Tab
                           className="tab"
                           disableRipple
-                          label="Node Stadistics"
+                          label="Country Stadistics"
                           {...a11yProps(1)}
                         />
                       </Tabs>
                     </div>
 
                     {activeTab == 0 ? (
-                      <Stadistics nodesPerCountry={nodesPerCountry} />
-                    ) : null}
-                    {activeTab == 1 ? (
                       <>
                         <TableContainer sx={{ minHeight: '400px' }}>
                           {isWidescreen || isDesktop ? (
@@ -242,6 +239,10 @@ const Validators: FC = () => {
                           )}
                         </TableContainer>
                       </>
+                    ) : null}
+
+                    {activeTab == 1 ? (
+                      <Stadistics nodesPerCountry={nodesPerCountry} />
                     ) : null}
                   </>
                 ) : null}
