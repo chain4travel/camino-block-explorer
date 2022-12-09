@@ -44,6 +44,7 @@
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-react-hooks": "4.3.0",
     "ethers": "5.7.2",
+    "flag-icons": "6.6.6",
     "fontfaceobserver": "2.1.0",
     "husky": "7.0.4",
     "i18next": "21.6.6",

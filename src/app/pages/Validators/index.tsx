@@ -64,6 +64,9 @@ function TabPanel(props: TabPanelProps) {
 const Validators: FC = () => {
   const { isDesktop, isWidescreen } = useWidth();
   const validators = useAppSelector(selectAllValidators);
+
+  console.log('validators', validators);
+
   const dispatch = useAppDispatch();
 
   //Map And Stadistics
@@ -148,51 +151,6 @@ const Validators: FC = () => {
                 {data.length > 0 ? (
                   <>
                     <div>
-                      <ComposableMap
-                        style={{
-                          height: isWidescreen || isDesktop ? 700 : 'auto',
-                          width: '100%',
-                        }}
-                        projection={'geoMercator'}
-                      >
-                        <ZoomableGroup center={[0, 40]} zoom={zoomValue}>
-                          <Geographies
-                            geography={features}
-                            pointerEvents={'none'}
-                          >
-                            {({ geographies }) =>
-                              geographies.map(geo => (
-                                <Geography
-                                  key={geo.rsmKey}
-                                  geography={geo}
-                                  fill="#41547C"
-                                />
-                              ))
-                            }
-                          </Geographies>
-                          {data.map(
-                            (
-                              { lng, lat, nodeIdentity, country, city },
-                              index,
-                            ) => {
-                              return (
-                                <CircleMarker
-                                  key={index}
-                                  country={country}
-                                  city={city}
-                                  lng={lng}
-                                  lat={lat}
-                                  rValue={10}
-                                  nodeIdentity={nodeIdentity}
-                                />
-                              );
-                            },
-                          )}
-                        </ZoomableGroup>
-                      </ComposableMap>
-                    </div>
-
-                    <div>
                       <Tabs
                         variant="fullWidth"
                         value={activeTab}
@@ -203,19 +161,72 @@ const Validators: FC = () => {
                         <Tab
                           className="tab"
                           disableRipple
-                          label="Node Stadistics"
+                          label="Map Statistics"
                           {...a11yProps(0)}
                         />
                         <Tab
                           className="tab"
                           disableRipple
-                          label="Country Stadistics"
+                          label="Node Statistics"
                           {...a11yProps(1)}
+                        />
+                        <Tab
+                          className="tab"
+                          disableRipple
+                          label="Country Statistics"
+                          {...a11yProps(2)}
                         />
                       </Tabs>
                     </div>
 
                     {activeTab == 0 ? (
+                      <>
+                        <ComposableMap
+                          style={{
+                            height: isWidescreen || isDesktop ? 700 : 'auto',
+                            width: '100%',
+                          }}
+                          projection={'geoMercator'}
+                        >
+                          <ZoomableGroup center={[0, 40]} zoom={zoomValue}>
+                            <Geographies
+                              geography={features}
+                              pointerEvents={'none'}
+                            >
+                              {({ geographies }) =>
+                                geographies.map(geo => (
+                                  <Geography
+                                    key={geo.rsmKey}
+                                    geography={geo}
+                                    fill="#41547C"
+                                  />
+                                ))
+                              }
+                            </Geographies>
+                            {data.map(
+                              (
+                                { lng, lat, nodeIdentity, country, city },
+                                index,
+                              ) => {
+                                return (
+                                  <CircleMarker
+                                    key={index}
+                                    country={country}
+                                    city={city}
+                                    lng={lng}
+                                    lat={lat}
+                                    rValue={10}
+                                    nodeIdentity={nodeIdentity}
+                                  />
+                                );
+                              },
+                            )}
+                          </ZoomableGroup>
+                        </ComposableMap>
+                      </>
+                    ) : null}
+
+                    {activeTab == 1 ? (
                       <>
                         <TableContainer sx={{ minHeight: '400px' }}>
                           {isWidescreen || isDesktop ? (
@@ -241,7 +252,7 @@ const Validators: FC = () => {
                       </>
                     ) : null}
 
-                    {activeTab == 1 ? (
+                    {activeTab == 2 ? (
                       <Stadistics nodesPerCountry={nodesPerCountry} />
                     ) : null}
                   </>
@@ -301,12 +312,6 @@ const columns: ColumnType[] = [
     name: 'EndTime',
     label: 'EndTime',
     field: 'EndTime',
-    align: 'center',
-  },
-  {
-    name: 'Duration',
-    label: 'Duration',
-    field: 'Duration',
     align: 'center',
   },
   {

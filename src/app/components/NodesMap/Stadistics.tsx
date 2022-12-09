@@ -48,6 +48,7 @@ const Stadistics = ({ nodesPerCountry }: any) => {
               nodesPerCountry[index].country
             );
           },
+          padding: 30,
         },
       },
       x: {
@@ -83,7 +84,6 @@ const Stadistics = ({ nodesPerCountry }: any) => {
 
   function updateWindowDimensions() {
     setLoadingRezise(true);
-
     setTimeout(() => {
       if (window.innerWidth < 720) {
         setIsMobile(true);
