@@ -11,6 +11,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import flags from './flags.json';
 import sortBy from 'lodash/sortBy';
+import Twemoji from 'react-twemoji';
 
 ChartJS.register(
   CategoryScale,
@@ -41,6 +42,7 @@ const Stadistics = ({ nodesPerCountry }: any) => {
       y: {
         ticks: {
           color: '#64748B',
+          fontFamily: 'NotoColorEmojiLimited',
           callback: function (value: any, index: any, ticks: any) {
             return (
               getStringFlag(nodesPerCountry[index].alpha2) +
@@ -108,7 +110,11 @@ const Stadistics = ({ nodesPerCountry }: any) => {
 
   return (
     <Fragment>
-      {loadingRezise == false ? <Bar options={options} data={data} /> : null}
+      <Twemoji options={{ className: 'twemoji' }}>
+        {loadingRezise == false ? (
+          <Bar className="twemoji" options={options} data={data} />
+        ) : null}
+      </Twemoji>
     </Fragment>
   );
 };

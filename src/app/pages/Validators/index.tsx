@@ -5,6 +5,7 @@ import {
   Box,
   TableContainer,
   TableCellProps,
+  useTheme,
 } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'store/configureStore';
 import { selectAllValidators } from 'store/validatorsSlice';
@@ -34,6 +35,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
+import '../../components/NodesMap/NotoFont.css';
+import StadisticsV2 from 'app/components/NodesMap/StadisticsV2';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -62,10 +65,9 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const Validators: FC = () => {
+  const theme = useTheme();
   const { isDesktop, isWidescreen } = useWidth();
   const validators = useAppSelector(selectAllValidators);
-
-  console.log('validators', validators);
 
   const dispatch = useAppDispatch();
 
@@ -142,7 +144,7 @@ const Validators: FC = () => {
                       variant="body1"
                     >
                       <Box sx={{ color: 'error.main' }}>
-                        <h4>Could not connect to the geolocation API</h4>
+                        {/*<h4>Could not connect to the geolocation API</h4>*/}
                       </Box>
                     </Typography>
                   </>
@@ -253,7 +255,19 @@ const Validators: FC = () => {
                     ) : null}
 
                     {activeTab == 2 ? (
-                      <Stadistics nodesPerCountry={nodesPerCountry} />
+                      <div className="noto-flags">
+                        {theme.palette.mode == 'light' ? (
+                          <StadisticsV2
+                            nodesPerCountry={nodesPerCountry}
+                            darkMode={false}
+                          />
+                        ) : (
+                          <StadisticsV2
+                            nodesPerCountry={nodesPerCountry}
+                            darkMode={true}
+                          />
+                        )}
+                      </div>
                     ) : null}
                   </>
                 ) : null}
