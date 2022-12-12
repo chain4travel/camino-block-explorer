@@ -62,11 +62,9 @@ const StadisticsV2 = ({ nodesPerCountry, darkMode }) => {
     },
     tooltip: {
       useHTML: true,
-      formatter: function () {
-        {
-          /* @ts-ignore */
-        }
-        return '<b>' + this.x + ':</b>' + this.y;
+      formatter: function (obj) {
+        let objData: any = this;
+        return '<b>' + objData.x + ':</b>' + objData.y;
       },
     },
   };
