@@ -28,9 +28,9 @@ export const PADDRESS = PCHAIN + '/address';
 
 export const VALIDATORS = BASE_PATH + '/validators';
 
-export const WALLET = 'https://wallet.camino.foundation/';
+export const WALLET = 'https://wallet.camino.network/';
 
-export const DOCS = 'https://docs.camino.foundation/';
+export const DOCS = 'https://docs.camino.network/';
 
 export const DISCORD = 'https://discord.gg/K5THjAweFB';
 

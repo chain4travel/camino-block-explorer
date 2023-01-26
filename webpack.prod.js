@@ -8,7 +8,7 @@ module.exports = merge(common, {
   devtool: 'source-map',
 
   output: {
-    publicPath: 'https://playground.suite-explorer.camino.foundation/',
+    publicPath: 'https://dev.suite-explorer.camino.network/',
     filename: 'js/[name].[fullhash:8].' + timestamp + '.js',
     chunkFilename: 'js/[name].[fullhash:8].' + timestamp + '.js',
   },
