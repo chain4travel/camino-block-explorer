@@ -78,8 +78,8 @@ const BlockchainCharts = ({
         if (startDate !== undefined && endDate !== undefined) {
             dispatch(
                 utilSlice({
-                    startDate: moment(startDate).toISOString(true).replace('.000-05:00', 'Z'),
-                    endDate: moment(endDate).toISOString(true).replace('.000-05:00', 'Z'),
+                    startDate: moment(startDate).utc().toISOString(),
+                    endDate: moment(endDate).utc().toISOString(),
                 }),
             )
         }
