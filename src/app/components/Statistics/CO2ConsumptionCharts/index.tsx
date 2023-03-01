@@ -70,8 +70,26 @@ const CO2ConsumptionCharts = ({
     }, [startDate, endDate])
 
     useEffect(() => {
-        setStartDate(new Date(moment().startOf('month').format('YYYY-MM-DD HH:mm:ss')))
-        setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
+        setStartDate(
+            new Date(
+                moment()
+                    .startOf('month')
+                    .add(-1, 'days')
+                    .startOf('month')
+                    .startOf('day')
+                    .format('YYYY-MM-DD HH:mm:ss'),
+            ),
+        )
+        setEndDate(
+            new Date(
+                moment()
+                    .startOf('month')
+                    .add(-1, 'days')
+                    .endOf('month')
+                    .endOf('day')
+                    .format('YYYY-MM-DD HH:mm:ss'),
+            ),
+        )
     }, [])
 
     const meterCO2: any = useAppSelector(sliceGetter)
