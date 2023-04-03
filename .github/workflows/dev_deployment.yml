@@ -6,7 +6,7 @@ on:
     branches: [dev, dev-deploy]
 
 env:
-  repo_name: camino-block-explorer-standalone
+  repo_name: explorer-standalone-dev
   repo: https://github.com/chain4travel/camino-block-explorer.git
   docker_image: 'europe-west3-docker.pkg.dev/pwk-c4t-dev/internal-camino-dev/camino-block-explorer'
   cloudrun_region: europe-west1
