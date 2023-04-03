@@ -40,7 +40,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
 
-      - name: push and deploy docker
+      - name: push and deploy
         run: |
           gcloud auth configure-docker --quiet europe-west3-docker.pkg.dev
           docker push ${{ steps.setDefaults.outputs.docker_image }}
