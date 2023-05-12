@@ -14,8 +14,12 @@ import Validators from './pages/Validators'
 import NotFoundPage from './pages/PageNotFound'
 import { BASE_PATH } from '../utils/route-paths'
 import Statistics from './pages/Statistics'
+import { getActiveNetwork } from 'store/app-config'
+import { useAppSelector } from 'store/configureStore'
 
 export function App() {
+    const activeNetwork = useAppSelector(getActiveNetwork)
+
     return (
         <BrowserRouter>
             <CssBaseline enableColorScheme />
@@ -23,35 +27,52 @@ export function App() {
                 <meta name="description" content="Camino Block Explorer" />
             </Helmet>
             <Routes>
-                <Route path={`${BASE_PATH}`} element={<MainLayout />}>
+                <Route
+                    path={`${activeNetwork.name.toLowerCase()}${BASE_PATH}`}
+                    element={<MainLayout />}
+                >
                     <Route
-                        path={`${BASE_PATH}`}
-                        element={<Navigate replace={true} to={`${BASE_PATH}/c-chain`} />}
+                        path={`${activeNetwork.name.toLowerCase()}${BASE_PATH}`}
+                        element={
+                            <Navigate
+                                replace={true}
+                                to={`${activeNetwork.name.toLowerCase()}${BASE_PATH}/c-chain`}
+                            />
+                        }
                     />
-                    <Route path="c-chain">
+                    <Route path={`c-chain`}>
                         <Route index element={<CChainPage />} />
-                        <Route path="blocks" element={<Blocks />} />
-                        <Route path="txs" element={<CTransactions />} />
-                        <Route path="block/:id" element={<BlockDetails />} />
-                        <Route path="tx/:id" element={<TransactionDetails />} />
-                        <Route path="address/:id" element={<Address />} />
+                        <Route path={`blocks`} element={<Blocks />} />
+                        <Route path={`txs`} element={<CTransactions />} />
+                        <Route path={`block/:id`} element={<BlockDetails />} />
+                        <Route path={`tx/:id`} element={<TransactionDetails />} />
+                        <Route path={`address/:id`} element={<Address />} />
                     </Route>
-                    <Route path="x-chain">
+                    <Route path={`x-chain`}>
                         <Route index element={<XChainPage />} />
-                        <Route path="txs" element={<XPTransactions />} />
-                        <Route path="tx/:id" element={<XPTransactionDetails />} />
-                        <Route path="address/:id" element={<XAddressDetail />} />
+                        <Route path={`txs`} element={<XPTransactions />} />
+                        <Route path={`tx/:id`} element={<XPTransactionDetails />} />
+                        <Route path={`address/:id`} element={<XAddressDetail />} />
                     </Route>
-                    <Route path="p-chain">
+                    <Route path={`p-chain`}>
                         <Route index element={<PChainPage />} />
-                        <Route path="txs" element={<XPTransactions />} />
-                        <Route path="tx/:id" element={<XPTransactionDetails />} />
-                        <Route path="address/:id" element={<XAddressDetail />} />
+                        <Route path={`txs`} element={<XPTransactions />} />
+                        <Route path={`tx/:id`} element={<XPTransactionDetails />} />
+                        <Route path={`address/:id`} element={<XAddressDetail />} />
                     </Route>
-                    <Route path={`${BASE_PATH}/mainnet`} element={<ComingSoonPage />} />
-                    <Route path={`${BASE_PATH}/validators`} element={<Validators />} />
-                    <Route path={`${BASE_PATH}/statistics`} element={<Statistics />} />
-                    <Route path="*" element={<NotFoundPage />}></Route>
+                    <Route
+                        path={`${activeNetwork.name.toLowerCase()}${BASE_PATH}/mainnet`}
+                        element={<ComingSoonPage />}
+                    />
+                    <Route
+                        path={`${activeNetwork.name.toLowerCase()}${BASE_PATH}/validators`}
+                        element={<Validators />}
+                    />
+                    <Route
+                        path={`${activeNetwork.name.toLowerCase()}${BASE_PATH}/statistics`}
+                        element={<Statistics />}
+                    />
+                    {/* <Route path="*" element={<NotFoundPage />}></Route> */}
                 </Route>
             </Routes>
             <GlobalStyle />
