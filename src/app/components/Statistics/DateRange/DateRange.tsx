@@ -10,6 +10,9 @@ import useWidth from '../../../hooks/useWidth'
 import { Radio, RadioGroup, FormControlLabel, FormControl } from '@mui/material'
 import { seeTimeAxis as typeSeeTimeAxis } from '../ChartConfig/SeeTimeAxis'
 import { IDataRef, IDateRange } from 'types/statistics'
+import axios from 'axios'
+import { getBaseUrl } from 'api/utils'
+import { baseEndpoint } from 'utils/magellan-api-utils'
 
 const PickerContainer = styled.div`
     display: flex;
@@ -48,7 +51,7 @@ const DateRange = ({
     setStartDate,
     darkMode,
     setSeeTimeAxis,
-    disableFuture,
+    isCO2Chart,
     seeTimeAxis,
     disableCurrentDay,
     firstLoad,
@@ -64,23 +67,21 @@ const DateRange = ({
 
     const handleClickOneDay = () => {
         setSeeTimeAxis('day')
-        setStartDate(new Date(moment().startOf('day').format('YYYY-MM-DD HH:mm:ss')))
+        setStartDate(new Date(moment().add(-1, 'days').format('YYYY-MM-DD HH:mm:ss')))
         setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
         validateFirstLoad()
     }
 
     const handleClickOneMonth = () => {
         setSeeTimeAxis('month')
-        setStartDate(new Date(moment().startOf('month').format('YYYY-MM-DD HH:mm:ss')))
+        setStartDate(new Date(moment().add(-1, 'months').format('YYYY-MM-DD HH:mm:ss')))
 
         if (disableCurrentDay) {
             setEndDate(
                 new Date(moment().add(-1, 'days').endOf('day').format('YYYY-MM-DD HH:mm:ss')),
             )
-        } else if (disableFuture) {
-            setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
         } else {
-            setEndDate(new Date(moment().endOf('month').format('YYYY-MM-DD HH:mm:ss')))
+            setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
         }
 
         validateFirstLoad()
@@ -88,16 +89,14 @@ const DateRange = ({
 
     const handleClickOneYear = () => {
         setSeeTimeAxis('year')
-        setStartDate(new Date(moment().startOf('year').format('YYYY-MM-DD HH:mm:ss')))
+        setStartDate(new Date(moment().add(-1, 'years').format('YYYY-MM-DD HH:mm:ss')))
 
         if (disableCurrentDay) {
             setEndDate(
                 new Date(moment().add(-1, 'days').endOf('day').format('YYYY-MM-DD HH:mm:ss')),
             )
-        } else if (disableFuture) {
-            setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
         } else {
-            setEndDate(new Date(moment().endOf('year').format('YYYY-MM-DD HH:mm:ss')))
+            setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
         }
 
         validateFirstLoad()
@@ -105,21 +104,28 @@ const DateRange = ({
 
     const handleClickOneAllTime = () => {
         setSeeTimeAxis('all')
-        setStartDate(
-            new Date(
-                moment('01/01/2000', 'DD/MM/YYYY').startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-            ),
-        )
-
-        if (disableCurrentDay) {
-            setEndDate(
-                new Date(moment().add(-1, 'days').endOf('day').format('YYYY-MM-DD HH:mm:ss')),
+        axios.get(`${getBaseUrl()}${baseEndpoint}/cblocks?limit=${50}&limit=1&blockStart=1`).then((response) => {
+            let hexToDecimal = (hex: string) => parseInt(hex, 16);
+            let timestampGenesisBlock = response.data.blocks[0].timestamp
+            let timestamp : number = hexToDecimal(timestampGenesisBlock)
+            setStartDate(
+                new Date(
+                    moment.unix(timestamp).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                ),
             )
-        } else {
-            setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
-        }
-
-        validateFirstLoad()
+    
+            if (disableCurrentDay) {
+                setEndDate(
+                    new Date(moment().add(-1, 'days').endOf('day').format('YYYY-MM-DD HH:mm:ss')),
+                )
+            } else {
+                setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
+            }
+    
+            validateFirstLoad()
+        }).catch((e) => {
+            console.error(e)
+        })
     }
 
     const handleChangeStartDate = (date: Date) => {
@@ -180,7 +186,7 @@ const DateRange = ({
         if (disableCurrentDay) {
             let yesterday = moment().add(-1, 'days').toDate()
             return yesterday
-        } else if (disableFuture) {
+        } else if (isCO2Chart) {
             return new Date()
         }
     }
@@ -235,7 +241,7 @@ const DateRange = ({
                             />
 
                             <FormControlLabel
-                                key={0}
+                                key={1}
                                 value={'month'}
                                 control={
                                     <Radio
@@ -249,7 +255,7 @@ const DateRange = ({
                                 label={'1 Month'}
                             />
                             <FormControlLabel
-                                key={0}
+                                key={2}
                                 value={'year'}
                                 control={
                                     <Radio
@@ -263,7 +269,7 @@ const DateRange = ({
                                 label={'1 Year'}
                             />
                             <FormControlLabel
-                                key={0}
+                                key={3}
                                 value={'all'}
                                 control={
                                     <Radio
@@ -291,7 +297,7 @@ const DateRange = ({
                             endDate={InitianEndDate}
                             customInput={<CustomInput label="Initial Date" />}
                             maxDate={getMaxDate(true)}
-                            // readOnly
+                        // readOnly
                         />
                         <DatePicker
                             selected={InitianEndDate}
@@ -302,7 +308,7 @@ const DateRange = ({
                             minDate={initialStartDate}
                             customInput={<CustomInput label="End Date" />}
                             maxDate={getMaxDate(false)}
-                            // readOnly
+                        // readOnly
                         />
                     </PickerContainer>
                 </>
@@ -335,7 +341,7 @@ const DateRange = ({
                                 label={'1 D'}
                             />
                             <FormControlLabel
-                                key={0}
+                                key={1}
                                 value={'month'}
                                 control={
                                     <Radio
@@ -349,7 +355,7 @@ const DateRange = ({
                                 label={'1 M'}
                             />
                             <FormControlLabel
-                                key={0}
+                                key={2}
                                 value={'year'}
                                 control={
                                     <Radio
@@ -363,7 +369,7 @@ const DateRange = ({
                                 label={'1 Y'}
                             />
                             <FormControlLabel
-                                key={0}
+                                key={3}
                                 value={'all'}
                                 control={
                                     <Radio
@@ -382,18 +388,18 @@ const DateRange = ({
                     <FilterContainerMobile className={darkMode ? 'picker-container' : ''}>
                         <DatePicker
                             selected={initialStartDate}
-                            onChange={(date: Date) => setStartDate(date)}
+                            onChange={(date: Date) => handleChangeStartDate(date)}
                             selectsStart
                             startDate={initialStartDate}
                             endDate={InitianEndDate}
                             customInput={<CustomInputMobile label="Initial Date" />}
                             maxDate={getMaxDate(true)}
                             withPortal
-                            // readOnly
+                        // readOnly
                         />
                         <DatePicker
                             selected={InitianEndDate}
-                            onChange={(date: Date) => setEndDate(date)}
+                            onChange={(date: Date) => handleChangeEndDate(date)}
                             selectsEnd
                             startDate={initialStartDate}
                             endDate={InitianEndDate}
@@ -401,7 +407,7 @@ const DateRange = ({
                             customInput={<CustomInputMobile label="End Date" />}
                             maxDate={getMaxDate(false)}
                             withPortal
-                            // readOnly
+                        // readOnly
                         />
                     </FilterContainerMobile>
                 </>

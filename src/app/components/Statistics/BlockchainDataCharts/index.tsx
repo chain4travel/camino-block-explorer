@@ -77,6 +77,7 @@ const BlockchainCharts = ({
     useEffect(() => {
         if (startDate !== undefined && endDate !== undefined) {
             switch (seeTimeAxis) {
+
                 case "day":
                     dispatch(
                         utilSlice({
@@ -100,6 +101,15 @@ const BlockchainCharts = ({
                         utilSlice({
                             startDate: `${moment().add(-1, 'years').format('YYYY-MM-DD')}T00:00:00Z`,
                             endDate: `${moment().format('YYYY-MM-DD')}T23:59:59Z`,
+                            limit: 0,
+                        }),
+                    )
+                    break;
+                case "all":
+                    dispatch(
+                        utilSlice({
+                            startDate: `${moment(startDate).format('YYYY-MM-DD')}T00:00:00Z`,
+                            endDate: `${moment(endDate).format('YYYY-MM-DD')}T23:59:59Z`,
                             limit: 0,
                         }),
                     )
@@ -283,7 +293,7 @@ const BlockchainCharts = ({
                                         setStartDate={setStartDate}
                                         darkMode={darkMode}
                                         setSeeTimeAxis={setSeeTimeAxis}
-                                        disableFuture={false}
+                                        isCO2Chart={false}
                                         seeTimeAxis={seeTimeAxis}
                                         disableCurrentDay={false}
                                         firstLoad={firstLoad}

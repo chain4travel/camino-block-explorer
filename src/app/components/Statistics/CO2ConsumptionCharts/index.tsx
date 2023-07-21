@@ -295,7 +295,7 @@ const CO2ConsumptionCharts = ({
                                                 setStartDate={setStartDate}
                                                 darkMode={darkMode}
                                                 setSeeTimeAxis={setSeeTimeAxis}
-                                                disableFuture={true}
+                                                isCO2Chart={true}
                                                 seeTimeAxis={seeTimeAxis}
                                                 disableCurrentDay={true}
                                             />

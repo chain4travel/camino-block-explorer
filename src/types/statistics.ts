@@ -57,7 +57,7 @@ export interface IDateRange {
     setStartDate: Dispatch<React.SetStateAction<Date | undefined>>
     darkMode: boolean
     setSeeTimeAxis: Dispatch<React.SetStateAction<string>>
-    disableFuture: boolean
+    isCO2Chart: boolean
     seeTimeAxis: string
     disableCurrentDay: boolean
     firstLoad?: boolean

@@ -11,7 +11,7 @@ import {
     co2EmissionsTooltip,
 } from './Tooltips'
 import moment from 'moment'
-import { seeTimeAxis, verifyRangeTime } from './SeeTimeAxis'
+import { seeTimeAxis, verifyRangeTime, validateRangeTime } from './SeeTimeAxis'
 import { ChainType } from 'utils/types/chain-type'
 import { getDisplayAmount } from 'utils/currency-utils'
 
@@ -150,8 +150,8 @@ class ChartConfig {
                 else {
                     return moment(date, 'YYYY-MM-DD').format('MMM (YYYY)')
                 }
-            case seeTimeAxis.all:
-                return moment(date, 'YYYY-MM-DD').format('YYYY')
+            case seeTimeAxis.all: //
+                return moment(date, 'YYYY-MM-DD').format('MMM (YYYY)')
         }
     }
 
