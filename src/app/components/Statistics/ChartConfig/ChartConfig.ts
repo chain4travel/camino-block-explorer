@@ -26,11 +26,11 @@ class ChartConfig {
         lowestValue: string
         lowestDate: string
     } = {
-        highestValue: '',
-        highestDate: '',
-        lowestValue: '',
-        lowestDate: '',
-    }
+            highestValue: '',
+            highestDate: '',
+            lowestValue: '',
+            lowestDate: '',
+        }
     timeSeeAxis: string = ''
     firstLoad: boolean = false
 
@@ -143,7 +143,13 @@ class ChartConfig {
             case seeTimeAxis.month:
                 return moment(date, 'YYYY-MM-DD').format('D MMM')
             case seeTimeAxis.year:
-                return moment(date, 'YYYY-MM-DD').format('MMM')
+                //If there are more than 2 results and it is validated, what type of filter was applied. In the case of different years, the month and year must be shown.
+                if (this.data.length <= 1) {
+                    return moment(date, 'YYYY-MM-DD').format('MMM')
+                }
+                else {
+                    return moment(date, 'YYYY-MM-DD').format('MMM (YYYY)')
+                }
             case seeTimeAxis.all:
                 return moment(date, 'YYYY-MM-DD').format('YYYY')
         }

@@ -54,6 +54,11 @@ export function verifyRangeTime(typeChartData: string | undefined, dataChart: an
             highestDate = data
         }
     }
+
+    return validateRangeTime(highestDate, lowestDate)
+}
+
+export function validateRangeTime(highestDate: Date, lowestDate: Date) {
     if (
         highestDate.getDate() === lowestDate.getDate() &&
         highestDate.getMonth() === lowestDate.getMonth() &&

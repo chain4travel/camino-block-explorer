@@ -24,6 +24,7 @@ import moment from 'moment'
 import { TextBlockchainDatachart } from '../../../../utils/statistics/TextBlockchainDatachart'
 import '../../../../styles/scrollbarModal.css'
 import { ConsumptionCharts, Emissions, TextProps } from 'types/statistics'
+import { validateRangeTime } from '../ChartConfig/SeeTimeAxis'
 
 const TooltipContainer = styled.div`
     display: flex;
@@ -41,7 +42,7 @@ const DateRangeContainer = styled.div`
     }
 `
 
-const Text = styled('p')<TextProps>`
+const Text = styled('p') <TextProps>`
     margin-left: 3rem;
     margin-right: 1rem;
     margin-top: 0.5rem;
@@ -68,7 +69,6 @@ const BlockchainCharts = ({
     const [endDate, setEndDate] = useState<Date>(new Date())
     const [seeTimeAxis, setSeeTimeAxis] = useState<string>('custom')
     const [firstLoad, setFirstLoad] = useState<boolean>(true)
-    const [applyFilterLimit, setApplyFilterLimit] = useState(false)
 
     const { isTablet, isSmallMobile, isWidescreen } = useWidth()
 
@@ -76,24 +76,54 @@ const BlockchainCharts = ({
 
     useEffect(() => {
         if (startDate !== undefined && endDate !== undefined) {
-            dispatch(
-                utilSlice({
-                    startDate: `${moment(startDate).format('YYYY-MM-DD')}T00:00:00Z`,
-                    endDate: `${moment(endDate).format('YYYY-MM-DD')}T23:59:59Z`,
-                    limit: applyFilterLimit ? 30 : 0,
-                }),
-            )
+            switch (seeTimeAxis) {
+                case "day":
+                    dispatch(
+                        utilSlice({
+                            startDate: `${moment().add(-1, 'days').format('YYYY-MM-DD')}T00:00:00Z`,
+                            endDate: `${moment().format('YYYY-MM-DD')}T23:59:59Z`,
+                            limit: 30
+                        }),
+                    )
+                    break;
+                case "month":
+                    dispatch(
+                        utilSlice({
+                            startDate: `${moment().add(-1, 'months').format('YYYY-MM-DD')}T00:00:00Z`,
+                            endDate: `${moment().format('YYYY-MM-DD')}T23:59:59Z`,
+                            limit: 30,
+                        }),
+                    )
+                    break;
+                case "year":
+                    dispatch(
+                        utilSlice({
+                            startDate: `${moment().add(-1, 'years').format('YYYY-MM-DD')}T00:00:00Z`,
+                            endDate: `${moment().format('YYYY-MM-DD')}T23:59:59Z`,
+                            limit: 0,
+                        }),
+                    )
+                    break;
+                case "custom":
 
-            //First query apply the limit
-            if (applyFilterLimit === true) {
-                setApplyFilterLimit(false)
+                    let diffDaysNumber = moment(startDate).diff(moment(endDate), 'days')
+                    let diffDays = diffDaysNumber * Math.sign(diffDaysNumber)
+                    let applyLimit = diffDays <= 30
+
+                    dispatch(
+                        utilSlice({
+                            startDate: `${moment(startDate).format('YYYY-MM-DD')}T00:00:00Z`,
+                            endDate: `${moment(endDate).format('YYYY-MM-DD')}T23:59:59Z`,
+                            limit: applyLimit ? 30 : 0,
+                        }),
+                    )
+                    break;
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startDate, endDate])
+    }, [startDate, endDate, seeTimeAxis])
 
     useEffect(() => {
-        setApplyFilterLimit(true)
         setStartDate(new Date(moment().add(-30, 'days').format('YYYY-MM-DD HH:mm:ss')))
         setEndDate(new Date(moment().format('YYYY-MM-DD HH:mm:ss')))
     }, [])
