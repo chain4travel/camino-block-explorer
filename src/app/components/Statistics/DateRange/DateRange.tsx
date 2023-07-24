@@ -67,7 +67,7 @@ const DateRange = ({
 
     const handleClickOneDay = () => {
         setSeeTimeAxis('day')
-        setStartDate(new Date(moment().add(-1, 'days').format('YYYY-MM-DD HH:mm:ss')))
+        setStartDate(new Date(moment().startOf('day').format('YYYY-MM-DD HH:mm:ss')))
         setEndDate(new Date(moment().endOf('day').format('YYYY-MM-DD HH:mm:ss')))
         validateFirstLoad()
     }

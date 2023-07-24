@@ -46,7 +46,7 @@ export const TextBlockchainDatachart = ({
                 case seeTimeAxis.year:
                     return moment(dateString).format('MMMM, YYYY')
                 case seeTimeAxis.all:
-                    return moment(dateString).format('YYYY')
+                    return validateCustomDateText(dateString)
                 case seeTimeAxis.custom:
                     return validateCustomDateText(dateString)
                 default:

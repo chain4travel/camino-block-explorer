@@ -77,12 +77,11 @@ const BlockchainCharts = ({
     useEffect(() => {
         if (startDate !== undefined && endDate !== undefined) {
             switch (seeTimeAxis) {
-
                 case "day":
                     dispatch(
                         utilSlice({
-                            startDate: `${moment().add(-1, 'days').format('YYYY-MM-DD')}T00:00:00Z`,
-                            endDate: `${moment().format('YYYY-MM-DD')}T23:59:59Z`,
+                            startDate: `${moment().startOf('day').format('YYYY-MM-DD')}T00:00:00Z`,
+                            endDate: `${moment().endOf('day').format('YYYY-MM-DD')}T23:59:59Z`,
                             limit: 30
                         }),
                     )
