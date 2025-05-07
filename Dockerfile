@@ -1,6 +1,6 @@
 ARG BUILD_ENV="build:dev"
 
-FROM node:16
+FROM node:20
 ARG BUILD_ENV
 WORKDIR /app/camino-block-explorer
 
