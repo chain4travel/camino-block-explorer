@@ -28,7 +28,7 @@ interface chainArgs {
 interface initialStateAppConfigType {
     commitHash?: string
     activeNetwork?: { explorerUrl: string }
-    networks: any
+    networks: Network[]
     chains: chainArgs[]
     activeTheme: string
     status: Status
@@ -37,27 +37,7 @@ interface initialStateAppConfigType {
 let initialState: initialStateAppConfigType = {
     commitHash: process.env.GIT_COMMIT_HASH,
     activeNetwork: getNetworkFromLocalStorage(),
-    networks: [
-        {
-            id: 'camino-testnet',
-            displayName: 'Columbus',
-            protocol: 'https',
-            host: 'columbus.camino.network',
-            magellanAddress: 'https://magellan.columbus.camino.network',
-            port: 443,
-            predefined: true,
-        },
-        {
-            id: 'mainnet-testnet',
-            displayName: 'Mainnet',
-            protocol: 'https',
-            host: 'api.camino.network',
-            magellanAddress: 'https://magellan.camino.network',
-            port: 443,
-            predefined: true,
-        },
-        ...(getCustomNetworksFromLocalStorage() as Network[]),
-    ],
+    networks: [...(getCustomNetworksFromLocalStorage() as Network[])],
     chains: [],
     activeTheme: 'dark',
     status: Status.IDLE,
@@ -68,9 +48,7 @@ const appConfigSlice = createSlice({
     initialState,
     reducers: {
         changeNetwork: (state, action) => {
-            state.activeNetwork = state.networks.find(
-                (item: { id: string }) => item.id === action.payload.id,
-            )
+            state.activeNetwork = state.networks.find(item => item.ip === action.payload.ip)
         },
         resetChains: state => {
             state.chains = []
