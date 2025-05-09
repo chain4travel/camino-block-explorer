@@ -21,13 +21,30 @@ export interface ChainOverviewType {
 }
 
 export interface Network {
-    id: string
-    displayName: string
+    /** Whether credentials should be included with requests */
+    withCredentials: boolean
+    /** Unique identifier for the network */
+    id: number
+    /** Human-readable name of the network */
+    name: string
+    /** URL for the network explorer API */
+    explorerUrl: string
+    /** URL for the network explorer website */
+    explorerSiteUrl: string
+    /** URL for the SignaVault service */
+    signavaultUrl: string
+    /** Network protocol (http/https) */
     protocol: string
-    host: string
+    /** Network port */
     port: number
-    predefined?: boolean
-    magellanAddress: string
+    /** Network IP address or hostname */
+    ip: string
+    /** Complete URL to access the network */
+    url: string
+    /** Network ID (may be null for some networks) */
+    networkId: number | null
+    /** Whether the network is in read-only mode */
+    readonly: boolean
 }
 
 export interface initialCchainStateType {

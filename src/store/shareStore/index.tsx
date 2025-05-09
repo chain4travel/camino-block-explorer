@@ -6,13 +6,14 @@ import { resetCChainReducer } from '../cchainSlice'
 import { useAppDispatch, useAppSelector } from '../configureStore'
 import { resetValidatorsReducer } from '../validatorsSlice'
 import { resetXPChainReducer } from '../xchainSlice'
+import { Network } from 'types/store'
 
 export const useStore = () => {
     const state = useAppSelector(state => state)
     const selectedThemeExplorer = useAppSelector(selectedTheme)
     const dispatch = useAppDispatch()
 
-    function switchNetwork(network: string) {
+    function switchNetwork(network: Network) {
         dispatch(resetCChainReducer())
         dispatch(resetValidatorsReducer())
         dispatch(resetXPChainReducer())
@@ -25,10 +26,12 @@ export const useStore = () => {
         changeTheme: (theme: string) => {
             dispatch(changeTheme(theme))
         },
-        updateNetworks: (networks: string) => {
+        updateNetworks: (networks: Network[]) => {
             dispatch(updateNetworks(networks))
         },
-        changeNetworkExplorer: (network: string) => switchNetwork(network),
+        changeNetworkExplorer: (network: Network) => {
+            switchNetwork(network)
+        },
     }
 }
 
