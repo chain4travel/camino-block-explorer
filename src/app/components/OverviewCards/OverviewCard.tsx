@@ -1,8 +1,8 @@
-import { Box, Card, CardContent, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import React, { FC } from 'react'
-
 import LoadingWrapper from 'app/components/LoadingWrapper'
 import { Status } from 'types'
+import { StyledCard, StyledCardContent } from './styledOverviewCard'
 
 type OverviewCardProps = {
     title: string
@@ -21,38 +21,27 @@ const OverviewCard: FC<OverviewCardProps> = ({
     onClick,
     dataCy,
 }) => {
+    const isClickable = Boolean(onClick)
+
     return (
-        <Card
-            variant="outlined"
-            sx={{
-                display: 'flex',
-                flex: 1,
-                minHeight: '150px',
-                backgroundColor: 'card.background',
-                textAlign: 'center',
-                p: '1rem 2rem',
-                borderRadius: '12px',
-                cursor: onClick ? 'pointer' : 'default',
-                borderColor: 'card.border',
-            }}
-            onClick={onClick}
-        >
-            <CardContent
-                sx={{
-                    display: 'flex',
-                    flex: 1,
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    p: '0',
-                }}
-            >
-                <Typography variant="h6" component="span" sx={{ color: 'card.title', pb: '25px' }}>
+        <StyledCard variant="outlined" isClickable={isClickable} onClick={onClick}>
+            <StyledCardContent>
+                <Typography
+                    variant="h6"
+                    component="span"
+                    className="card-title"
+                    sx={{
+                        color: 'card.title',
+                        pb: theme => theme.spacing(3.125), // 25px
+                        transition: 'color 0.3s ease',
+                    }}
+                >
                     {title}
                 </Typography>
                 <Box
                     sx={{
                         display: 'flex',
-                        gap: '10px',
+                        gap: theme => theme.spacing(1.25), // 10px
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}
@@ -62,7 +51,11 @@ const OverviewCard: FC<OverviewCardProps> = ({
                             variant="h4"
                             component="span"
                             fontWeight="fontWeightBold"
-                            sx={{ color: 'card.contrastText' }}
+                            className="card-value"
+                            sx={{
+                                color: 'card.contrastText',
+                                transition: 'color 0.3s ease',
+                            }}
                             data-cy={dataCy}
                         >
                             {value}
@@ -78,8 +71,8 @@ const OverviewCard: FC<OverviewCardProps> = ({
                         )}
                     </LoadingWrapper>
                 </Box>
-            </CardContent>
-        </Card>
+            </StyledCardContent>
+        </StyledCard>
     )
 }
 
