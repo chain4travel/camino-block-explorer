@@ -44,13 +44,12 @@ export function NavBar() {
                     <Toolbar
                         sx={{
                             display: 'flex',
-                            height: 'auto',
-                            py: '1rem',
+                            py: '0rem',
                             px: '0rem !important',
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             gap: '1rem',
-                            minHeight: 'auto',
+                            height: '100% !important',
                             [theme.breakpoints.down('md')]: { py: '.5rem' },
                         }}
                     >

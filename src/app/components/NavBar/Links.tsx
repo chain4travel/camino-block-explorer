@@ -1,12 +1,10 @@
+// src/components/tabs/Links.tsx
 import React, { useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-
-import Box from '@mui/material/Box'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
 import { RoutesConfig } from 'utils/route-paths'
 import { ChainType } from 'utils/types/chain-type'
-import { STATISTICS_LINK } from '../../../utils/types/statistics-type'
+import { STATISTICS_LINK, VALIDATORS_LINK } from '../../../utils/types/statistics-type'
+import { StyledBox, StyledTabs, StyledTab } from './styledLinks'
 
 function a11yProps(index: number) {
     return {
@@ -14,6 +12,7 @@ function a11yProps(index: number) {
         'aria-controls': `simple-tabpanel-${index}`,
     }
 }
+
 const activeTab = (path: string): number => {
     switch (path) {
         case ChainType.C_CHAIN:
@@ -22,8 +21,10 @@ const activeTab = (path: string): number => {
             return 1
         case ChainType.P_CHAIN:
             return 2
+        case VALIDATORS_LINK:
+            return 3
         case STATISTICS_LINK:
-            return 5
+            return 4
     }
     return 0
 }
@@ -31,70 +32,62 @@ const activeTab = (path: string): number => {
 export default function Links() {
     const routes = RoutesConfig()
     const location = useLocation()
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        if (location.pathname !== routes.MAINNET) {
-            if (newValue === 0) navigate(routes.CCHAIN)
-            else if (newValue === 1) navigate(routes.XCHAIN)
-            else if (newValue === 2) navigate(routes.PCHAIN)
-            else if (newValue === 5) navigate(routes.STATISTICS)
-        }
-    }
+    const navigate = useNavigate()
 
     const activeChainTab = useMemo(() => {
         let activeChain = location.pathname.split('/')[3]
         return activeTab(activeChain)
     }, [location])
 
-    let navigate = useNavigate()
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                cursor: 'pointer',
-                width: '100%',
-                height: '48px',
-            }}
-        >
-            <Tabs
+        <StyledBox>
+            <StyledTabs
                 value={activeChainTab}
-                onChange={handleChange}
-                textColor="secondary"
-                // remove the underline
-                sx={{ '& .MuiTabs-indicator': { display: 'none' } }}
                 scrollButtons="auto"
                 variant="scrollable"
                 allowScrollButtonsMobile
             >
-                <Tab
+                <StyledTab
                     className="tab"
                     disableRipple
                     label="C-Chain"
+                    onClick={() => navigate(routes.CCHAIN)}
                     {...a11yProps(0)}
-                    sx={{ alignItems: { xs: 'baseline', sm: 'self-start' } }}
+                    isActive={activeChainTab === 0}
                 />
-                <Tab
+                <StyledTab
                     className="tab"
                     disableRipple
                     label="X-Chain"
+                    onClick={() => navigate(routes.XCHAIN)}
                     {...a11yProps(1)}
-                    sx={{ alignItems: { xs: 'baseline', sm: 'self-start' } }}
+                    isActive={activeChainTab === 1}
                 />
-                <Tab
+                <StyledTab
                     className="tab"
                     disableRipple
                     label="P-Chain"
+                    onClick={() => navigate(routes.PCHAIN)}
                     {...a11yProps(2)}
-                    sx={{ alignItems: { xs: 'baseline', sm: 'self-start' } }}
+                    isActive={activeChainTab === 2}
                 />
-                <Tab
+                <StyledTab
                     className="tab"
-                    value={5}
+                    disableRipple
+                    label="Validators"
+                    onClick={() => navigate(routes.VALIDATORS)}
+                    {...a11yProps(3)}
+                    isActive={activeChainTab === 3}
+                />
+                <StyledTab
+                    className="tab"
                     disableRipple
                     label="Statistics"
-                    {...a11yProps(5)}
-                    sx={{ alignItems: { xs: 'baseline', sm: 'self-start' } }}
+                    onClick={() => navigate(routes.STATISTICS)}
+                    {...a11yProps(4)}
+                    isActive={activeChainTab === 4}
                 />
-            </Tabs>
-        </Box>
+            </StyledTabs>
+        </StyledBox>
     )
 }
